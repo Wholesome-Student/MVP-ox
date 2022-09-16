@@ -10,7 +10,7 @@ def qr_decode(data:str|bytes) -> dict:
     except:
         return {"id":"","ans":None}
 
-def checksum(num:int):
+def checksum(num:int) -> int:
     num=abs(num)
     sum=0
     while num>0:

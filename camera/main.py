@@ -14,6 +14,8 @@ try:
     users.clear()
 except JSONDecodeError:
     users = {}
+finally:
+    readJsonFile.close()
 matchAns = False
 playerCount = 0
 matchCount = 0
@@ -54,6 +56,7 @@ with depthai.Device(pipeline) as device:
                     users[userInfo['id']] = userInfo['ans']
                     writeJsonFile = open("userInfo/userInfo.json", "w")
                     json.dump(users, writeJsonFile, ensure_ascii=False, indent=2)
+                    writeJsonFile.close()
 
                     x, y, w, h = code.rect
 

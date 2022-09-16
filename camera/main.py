@@ -30,9 +30,6 @@ cam_rgb.preview.link(xout_rgb.input)
 
 cam_rgb.setFps(5)
 
-
-
-
 with depthai.Device(pipeline) as device:
     q_rgb = device.getOutputQueue("rgb")
 
@@ -84,7 +81,8 @@ with depthai.Device(pipeline) as device:
             frame = cv2.cvtColor(np.asarray(result), cv2.COLOR_RGBA2BGRA)
 
             if matchAns and playerCount != 0:
-                cv2.putText(frame, 'rate: ' + str(100 * (matchCount / playerCount)), (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 0), 2)
+                cv2.putText(frame, 'rate: ' + str(100 * (matchCount / playerCount)), (10, 30), cv2.FONT_HERSHEY_SIMPLEX,
+                            1, (255, 255, 0), 2)
             matchCount = 0
             playerCount = 0
             cv2.imshow("MaruVatuPossible", frame)

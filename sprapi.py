@@ -17,10 +17,13 @@ sheet2 = s_sheet.get_worksheet(1)
 print("シート%d %d行%d列"%(sheet1.index,sheet1.row_count,sheet1.col_count))
 print("シート%d %d行%d列"%(sheet2.index,sheet2.row_count,sheet2.col_count))
 
-def load_data() -> list:
+def load_ques():
+    return sheet2.get_all_cells()
+
+def load_ans():
     return sheet1.get_all_cells()
 
-def write_data(data,client_id:int,correct_ans:bool):
+def write_ans(data,client_id:int,correct_ans:bool):
     answers=list(data.values())
     correct=answers.count(correct_ans)
     sum=len(answers)

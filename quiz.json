@@ -1,0 +1,13 @@
+{
+    "Quiz01":{
+        "id":1,
+        "question":"Is this question true?",
+        "answer":false
+    },
+
+    "Quiz02":{
+        "id":2,
+        "question":"AM I YOU?",
+        "answer":true
+    }
+}

@@ -5,6 +5,7 @@ from PIL import Image
 from pyzbar.pyzbar import decode, ZBarSymbol
 import json
 from json import JSONDecodeError
+import mvp_qr
 
 ans = False
 readJsonFile = open("userInfo/userInfo.json")
@@ -30,14 +31,6 @@ cam_rgb.preview.link(xout_rgb.input)
 cam_rgb.setFps(5)
 
 
-def qr_decode(data: str | bytes) -> dict:
-    try:
-        if type(data) == bytes:
-            data = data.decode()
-        num = int(data)
-        return {"id": "%04d" % (num // 2), "ans": num % 2 == 1}
-    except ValueError:
-        return {"id": "", "ans": None}
 
 
 with depthai.Device(pipeline) as device:
@@ -60,7 +53,7 @@ with depthai.Device(pipeline) as device:
             d = decode(result, symbols=[ZBarSymbol.QRCODE])
             try:
                 for code in d:
-                    userInfo = qr_decode(code.data.decode("utf-8"))
+                    userInfo = mvp_qr.qr_decode(code.data.decode("utf-8"))
                     users[userInfo['id']] = userInfo['ans']
                     writeJsonFile = open("userInfo/userInfo.json", "w")
                     json.dump(users, writeJsonFile, ensure_ascii=False, indent=2)

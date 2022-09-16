@@ -38,4 +38,4 @@ def write_ans(data,client_id:int,correct_ans:bool):
 
 with open(path+"/ans.json") as f:
     data=json.load(f)
-    write_data(data,1,False)
+    write_ans(data,1,False)

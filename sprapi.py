@@ -3,6 +3,7 @@ import json
 from datetime import datetime
 import os.path
 
+#このpythonファイルが置いてあるディレクトリ
 path=os.path.dirname(os.path.abspath(__file__))
 
 #Google Drive API
@@ -13,7 +14,8 @@ score_sheet = spr.worksheet("score")
 quiz_sheet = spr.worksheet("quiz")
 
 def load_status():
-    return status_sheet.get_values()
+    data=status_sheet.get_values() 
+    return {d[0]:d[1] for d in data if d[0]}
 
 def load_score():
     return score_sheet.get_values()

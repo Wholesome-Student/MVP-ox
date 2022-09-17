@@ -1,5 +1,4 @@
 import gspread
-from oauth2client.service_account import ServiceAccountCredentials
 import json
 from datetime import datetime
 import os.path
@@ -8,8 +7,7 @@ path=os.path.dirname(os.path.abspath(__file__))
 
 #Google Drive API
 scope =['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
-creds = ServiceAccountCredentials.from_json_keyfile_name(path+'/sodium-hue-361405-237068a500a2.json', scope)
-client = gspread.authorize(creds)
+client = gspread.service_account(filename=path+'/sodium-hue-361405-237068a500a2.json')
 s_sheet = client.open("MVP")
 sheet1 = s_sheet.get_worksheet(0)
 sheet2 = s_sheet.get_worksheet(1)

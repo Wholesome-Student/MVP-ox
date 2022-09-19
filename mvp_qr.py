@@ -1,7 +1,9 @@
-def qr_encode(id:str|int,ans:bool) -> int:
+from typing import Union
+
+def qr_encode(id:Union[str,int],ans:bool) -> int:
     return int(id)*2+(1 if ans else 0)
 
-def qr_decode(data:str|bytes) -> dict:
+def qr_decode(data:Union[str,bytes]) -> dict:
     try:
         if type(data)==bytes:
             data=data.decode()

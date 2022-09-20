@@ -68,4 +68,4 @@ def write_quiz(quizzes: list[dict]):
     quiz_sheet.resize(rows=rows_count, cols=3)
     quiz_sheet.batch_update([{"range": quiz_range, "values": values}])
 
-    return ids
+    return len(ids)

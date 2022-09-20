@@ -32,6 +32,9 @@ def load_quiz():
 
 
 def write_score(data: dict, correct_ans: bool) -> float:
+    if client_id==None:
+        raise RuntimeError
+    
     answers = list(data.values())
 
     cells = score_sheet.range(client_id, 1, client_id, 4)
@@ -48,7 +51,3 @@ def write_score(data: dict, correct_ans: bool) -> float:
     score_sheet.update_cells(cells)
 
     return rate
-
-# with open(path+"/ans.json") as f:
-#    data=json.load(f)
-#    write_score(data,1,False)

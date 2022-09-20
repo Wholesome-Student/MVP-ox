@@ -21,15 +21,15 @@ def init():
 
 
 def read_status():
-    data=status_sheet.get_values()
+    data = status_sheet.get_values()
     return {row[0]: row[1] for row in data if row[0]}
 
 def read_score():
     return score_sheet.get_values()
 
 def read_quiz():
-    data=quiz_sheet.get_all_records(numericise_ignore=[2])
-    return [{"id":row["id"],"question":row["question"],"answer":row["answer"]==1} for row in data]
+    data = quiz_sheet.get_all_records(numericise_ignore=[2])
+    return [{"id": row["id"], "question":row["question"], "answer":row["answer"] == 1} for row in data]
 
 
 def write_score(data: dict, correct_ans: bool) -> float:
@@ -58,14 +58,12 @@ def write_quiz(quizzes: list[dict]):
     values = []
 
     for quiz in quizzes:
-        if "id" not in quiz or "question" not in quiz or "answer" not in quiz:
-            raise ValueError
         if quiz["id"] not in ids:
             values.append([quiz["id"], quiz["question"], 1 if quiz["answer"] else 0])
             ids.append(quiz["id"])
 
     rows_count = len(ids)+1
-    quiz_range = "A2:C%d"%(rows_count)
+    quiz_range = "A2:C%d" % (rows_count)
 
     quiz_sheet.resize(rows=rows_count, cols=3)
     quiz_sheet.batch_update([{"range": quiz_range, "values": values}])

@@ -8,14 +8,7 @@ from json import JSONDecodeError
 import mvp_qr
 
 ans = False
-readJsonFile = open("userInfo/userInfo.json")
-try:
-    users = json.load(readJsonFile)
-    users.clear()
-except JSONDecodeError:
-    users = {}
-finally:
-    readJsonFile.close()
+users = {}
 matchAns = False
 playerCount = 0
 matchCount = 0
@@ -97,6 +90,7 @@ with depthai.Device(pipeline) as device:
             matchAns = True
         elif key == ord('t'):
             matchAns = False
+            users = {}
         elif key == ord('m'):
             ans = True
         elif key == ord('v'):

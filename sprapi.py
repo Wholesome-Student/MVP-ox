@@ -1,40 +1,165 @@
-import gspread
-import json
 from datetime import datetime
+import random
 import os.path
 
-# このpythonファイルが置いてあるディレクトリ
+import gspread
+
+# Directory where this python file is
 path = os.path.dirname(os.path.abspath(__file__))
 
-client_id = None
+client_id = None  # 0:host 1-10:client
+state = {"state_code": 0}
 
 # Google Drive API
 client = gspread.service_account(filename=path+"/sodium-hue-361405-237068a500a2.json")
 spr = client.open("MVP")
-status_sheet = spr.worksheet("status")
+state_sheet = spr.worksheet("state")
 score_sheet = spr.worksheet("score")
 quiz_sheet = spr.worksheet("quiz")
+init_sheet = spr.worksheet("init")
 
 
-def init():
+class MVPSpreadsheetAPIError(Exception):
+    """Base exception class for MVP_Spreadsheet_API."""
     pass
 
+class MVPPermissionError(MVPSpreadsheetAPIError):
+    """Not enough permissions."""
+    pass
 
-def read_status():
-    data = status_sheet.get_values()
+def client_init() -> int:
+    """Get and return client_id.
+    
+    Request
+    -------
+    read requests: 1
+    write requests: 1
+
+    Returns
+    -------
+    client_id : :class:`int`
+        ID assigned to this client.
+
+    Raises
+    ------
+    RuntimeError
+        This client or host has connected.
+    """
+    global client_id
+    if client_id != None:
+        raise RuntimeError("init function can only be run once.")
+    state = read_state()
+    if state["state_id"] != 10:
+        raise RuntimeError("server is not in initialization state.")
+    rand = random.randint(0x0,0xff)
+    response = init_sheet.append_row([rand],include_values_in_response=True)
+    updatedData = response["updates"]["updatedData"]
+    client_id = gspread.utils.a1_to_rowcol(updatedData["range"].split("!")[-1])[0]
+    return client_id
+
+
+def server_init(client_count: int):
+    """Initialize and allow clients to connect.
+    
+    Request
+    -------
+    read requests: 1
+    write requests: 3
+
+    Parameters
+    ----------
+    client_count : :class:`int`
+        Number of clients to connect.
+
+    Raises
+    ------
+    RuntimeError
+        This client or host has connected.
+    """
+    global client_id
+    if client_id != None:
+        raise RuntimeError("init function can only be run once.")
+    if int(client_count) <= 0:
+        raise ValueError("client_count must be >0.")
+    state = read_state()
+    if state["state_id"] != 0:
+        raise RuntimeError("other server has connected.")
+
+    client_id = 0
+    init_sheet.resize(rows=1, cols=2)
+    init_sheet.clear()
+    state["state_code"] = 10
+    state["clients_count"] = int(client_count)
+    state["clients_remaining"] = int(client_count)
+    write_state(state)
+
+def wait_client():
+    if client_id != 0:
+        raise MVPPermissionError("only host can run %s.wait_client()." % __name__)
+    clients = init_sheet.get_values()
+    # 未完成
+
+
+def read_state() -> dict[str, str]:
+    """Return state of MVP.
+    
+    Request
+    -------
+    read requests: 1
+    write requests: 0
+
+    Returns
+    -------
+    state : dict[:class:`str`, :class:`str`]
+        state of MVP.
+    """
+    data = state_sheet.get_values()
     return {row[0]: row[1] for row in data if row[0]}
 
-def read_score():
+def read_score() -> list[list]:
+    """Return score for each client.
+    
+    Request
+    -------
+    read requests: 1
+    write requests: 0
+
+    Returns
+    -------
+    state : list[:class:`list`]
+        list of score for each client.
+    """
     return score_sheet.get_values()
 
-def read_quiz():
+def read_quiz() -> list[dict]:
+    """Return quiz list.
+    
+    Request
+    -------
+    read requests: 1
+    write requests: 0
+
+    Returns
+    -------
+    state : list[:class:`dict`]
+        list of quiz.
+    """
     data = quiz_sheet.get_all_records(numericise_ignore=[2])
     return [{"id": row["id"], "question":row["question"], "answer":row["answer"] == 1} for row in data]
 
 
+def write_state(state: dict):
+    if client_id != 0:
+        raise MVPPermissionError("only host can run %s.write_state()." % __name__)
+
+    values = [[key, state[key]] for key in state]
+    state_range = "A1:B%d" % len(values)
+    state_sheet.resize(rows=len(values), cols=3)
+    state_sheet.batch_update([{"range": state_range, "values": values}])
+
 def write_score(data: dict, correct_ans: bool) -> float:
     if client_id == None:
-        raise RuntimeError("%s.init() must be run before write." % __name__)
+        raise MVPPermissionError("%s.client_init() must be run before write." % __name__)
 
     answers = list(data.values())
 

@@ -178,7 +178,7 @@ class MVPHost(MVPAccessBase):
         self._ishost = True
         self._init_sheet.resize(rows=1, cols=2)
         self._init_sheet.clear()
-        self._state["state_code"] = 10
+        state["state_code"] = 10
         state["clients_count"] = int(client_count)
         self.write_state(state)
 
@@ -190,12 +190,6 @@ class MVPHost(MVPAccessBase):
         state_range = "A1:B%d" % len(values)
         self._state_sheet.resize(rows=len(values), cols=3)
         self._state_sheet.batch_update([{"range": state_range, "values": values}])
-
-    def wait_client(self):
-        if self._client_id != 0:
-            raise MVPPermissionError("only host can run wait_client().")
-        clients = self._init_sheet.get_values()
-        # 未完成
 
     def write_quiz(self, quizzes: list[dict]) -> list:
         ids = []

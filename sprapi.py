@@ -30,8 +30,8 @@ class MVPPermissionError(MVPSpreadsheetAPIError):
 def client_init() -> int:
     """Get and return client_id.
     
-    Request
-    -------
+    Requests
+    --------
     read requests: 1
     write requests: 1
 
@@ -61,8 +61,8 @@ def client_init() -> int:
 def server_init(client_count: int):
     """Initialize and allow clients to connect.
     
-    Request
-    -------
+    Requests
+    --------
     read requests: 1
     write requests: 3
 
@@ -103,8 +103,8 @@ def wait_client():
 def read_state() -> dict[str, str]:
     """Return state of MVP.
     
-    Request
-    -------
+    Requests
+    --------
     read requests: 1
     write requests: 0
 
@@ -119,8 +119,8 @@ def read_state() -> dict[str, str]:
 def read_score() -> list[list]:
     """Return score for each client.
     
-    Request
-    -------
+    Requests
+    --------
     read requests: 1
     write requests: 0
 
@@ -134,8 +134,8 @@ def read_score() -> list[list]:
 def read_quiz() -> list[dict]:
     """Return quiz list.
     
-    Request
-    -------
+    Requests
+    --------
     read requests: 1
     write requests: 0
 
@@ -157,11 +157,36 @@ def write_state(state: dict):
     state_sheet.resize(rows=len(values), cols=3)
     state_sheet.batch_update([{"range": state_range, "values": values}])
 
-def write_score(data: dict, correct_ans: bool) -> float:
-    if client_id == None:
-        raise MVPPermissionError("%s.client_init() must be run before write." % __name__)
+def write_score(user_ans: dict[str, bool], correct_ans: bool) -> float:
+    """Write number of correct answers, number of answers, and correct answer rate of this clients.
+    Return correct answer rate of this clients.
+    
+    Requests
+    --------
+    read requests: 1
+    write requests: 1
 
-    answers = list(data.values())
+    Parameters
+    ----------
+    user_ans : dict[:class:`str`, :class:`bool`]
+        Dict of answer for each user of this client
+    correct_ans : bool
+        Correct answer for this question
+
+    Returns
+    -------
+    rate : float
+        Correct answer rate of this clients.
+
+    Raises
+    ------
+    MVPPermissionError
+        Client does not have client_id. (Run client_init() first.)
+    """
+    if client_id == None or client_id == 0:
+        raise MVPPermissionError("%s.client_init() must be run before write score." % __name__)
+
+    answers = list(user_ans.values())
 
     cells = score_sheet.range(client_id, 1, client_id, 4)
 

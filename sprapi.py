@@ -24,6 +24,7 @@ class MVPAccessBase():
         self._connect = False
         self._client_id = None
         self._ishost = False
+
         # Google Drive API
         self._client = gspread.service_account(filename=path+"/sodium-hue-361405-237068a500a2.json")
         self._spr = self._client.open("MVP")
@@ -31,10 +32,6 @@ class MVPAccessBase():
         self._score_sheet = self._spr.worksheet("score")
         self._quiz_sheet = self._spr.worksheet("quiz")
         self._init_sheet = self._spr.worksheet("init")
-
-    @property
-    def client_id(self):
-        return self._client_id
 
     def read_state(self) -> dict[str, str]:
         """Return state of MVP.
@@ -104,11 +101,19 @@ class MVPClient(MVPAccessBase):
         if state["state_id"] != 10:
             raise RuntimeError("server is not in initialization state.")
         rand = "%02x" % random.randint(0x0,0xff)
-        response = self._init_sheet.append_row([rand],include_values_in_response=True)
+        response = self._init_sheet.append_row([rand,1],include_values_in_response=True)
         updatedData = response["updates"]["updatedData"]
         self._connect = True
         self._client_id = gspread.utils.a1_to_rowcol(updatedData["range"].split("!")[-1])[0]
     
+    def __del__(self) -> None:
+        self._init_sheet.update_cell(row=self._client_id, col=2, value=0)
+
+    @property
+    def client_id(self) -> int:
+        """:class:`int`: ID assigned to this client."""
+        return self._client_id
+
     def write_score(self, user_ans: dict[str, bool], correct_ans: bool) -> float:
         """Write number of correct answers, number of answers, and correct answer rate of this clients.
         Return correct answer rate of this clients.
@@ -121,9 +126,9 @@ class MVPClient(MVPAccessBase):
         Parameters
         ----------
         user_ans : dict[:class:`str`, :class:`bool`]
-            Dict of answer for each user of this client
+            Dict of answer for each user of this client.
         correct_ans : bool
-            Correct answer for this question
+            Correct answer for this question.
 
         Returns
         -------
@@ -151,6 +156,7 @@ class MVPClient(MVPAccessBase):
 
 class MVPHost(MVPAccessBase):
     """Host for MVP_Spreadsheet_API.
+    This try to write state_id to 0 when the instance is about to be destroyed.
     
     Requests(init)
     --------

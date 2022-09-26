@@ -25,14 +25,6 @@ class MVPAccessBase():
         self._client_id = None
         self._ishost = False
 
-        # Google Drive API
-        self._client = gspread.service_account(filename=path+"/sodium-hue-361405-237068a500a2.json")
-        self._spr = self._client.open("MVP")
-        self._state_sheet = self._spr.worksheet("state")
-        self._score_sheet = self._spr.worksheet("score")
-        self._quiz_sheet = self._spr.worksheet("quiz")
-        self._init_sheet = self._spr.worksheet("init")
-
     def read_state(self) -> dict[str, str]:
         """Return state of MVP.
         
@@ -97,6 +89,15 @@ class MVPClient(MVPAccessBase):
     """
     def __init__(self) -> None:
         super().__init__()
+
+        # Google Drive API
+        self._client = gspread.service_account(filename=path+"/237068a500a2.json")
+        self._spr = self._client.open("MVP")
+        self._state_sheet = self._spr.worksheet("state")
+        self._score_sheet = self._spr.worksheet("score")
+        self._quiz_sheet = self._spr.worksheet("quiz")
+        self._init_sheet = self._spr.worksheet("init")
+
         state = self.read_state()
         if state["state_id"] != 10:
             raise RuntimeError("server is not in initialization state.")
@@ -107,7 +108,9 @@ class MVPClient(MVPAccessBase):
         self._client_id = gspread.utils.a1_to_rowcol(updatedData["range"].split("!")[-1])[0]
     
     def __del__(self) -> None:
-        self._init_sheet.update_cell(row=self._client_id, col=2, value=0)
+        if self._connect:
+            self._init_sheet.update_cell(row=self._client_id, col=2, value=0)
+            self._connect = False
 
     @property
     def client_id(self) -> int:
@@ -127,7 +130,7 @@ class MVPClient(MVPAccessBase):
         ----------
         user_ans : dict[:class:`str`, :class:`bool`]
             Dict of answer for each user of this client.
-        correct_ans : bool
+        correct_ans : :class:`bool`
             Correct answer for this question.
 
         Returns
@@ -135,6 +138,9 @@ class MVPClient(MVPAccessBase):
         rate : float
             Correct answer rate of this clients.
         """
+        if not self._connect:
+            raise MVPPermissionError("not connected")
+
         answers = list(user_ans.values())
 
         cells = self._score_sheet.range(self._client_id, 1, self._client_id, 4)
@@ -175,6 +181,15 @@ class MVPHost(MVPAccessBase):
     """
     def __init__(self,client_count: int) -> None:
         super().__init__()
+
+        # Google Drive API
+        self._client = gspread.service_account(filename=path+"/320085d13180.json")
+        self._spr = self._client.open("MVP")
+        self._state_sheet = self._spr.worksheet("state")
+        self._score_sheet = self._spr.worksheet("score")
+        self._quiz_sheet = self._spr.worksheet("quiz")
+        self._init_sheet = self._spr.worksheet("init")
+
         if int(client_count) <= 0:
             raise ValueError("client_count must be >0.")
         state = self.read_state()
@@ -189,15 +204,21 @@ class MVPHost(MVPAccessBase):
         self.write_state(state)
 
     def __del__(self) -> None:
-        self.write_state({"state_code":0})
+        if self._connect:
+            self.write_state({"state_code":0})
+            self._connect = False
 
     def write_state(self, state: dict):
+        if not self._connect:
+            raise MVPPermissionError("not connected")
         values = [[key, state[key]] for key in state]
         state_range = "A1:B%d" % len(values)
         self._state_sheet.resize(rows=len(values), cols=3)
         self._state_sheet.batch_update([{"range": state_range, "values": values}])
 
     def write_quiz(self, quizzes: list[dict]) -> list:
+        if not self._connect:
+            raise MVPPermissionError("not connected")
         ids = []
         values = []
 

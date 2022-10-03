@@ -73,7 +73,7 @@ class MVPAccessBase():
         return [{"id": row["id"], "question":row["question"], "answer":row["answer"] == 1} for row in data]
     
     def read_client(self) -> dict:
-        """Return quiz list.
+        """Return client state.
         
         Requests
         --------
@@ -82,8 +82,8 @@ class MVPAccessBase():
 
         Returns
         -------
-        state : list[:class:`dict`]
-            list of quiz.
+        state : :class:`dict`
+            state of client.
         """
         data = self._init_sheet.get_values()
         return {row[0]: gspread.utils.numericise(row[1]) for row in data}

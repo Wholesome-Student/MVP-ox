@@ -86,7 +86,7 @@ class MVPAccessBase():
             list of quiz.
         """
         data = self._init_sheet.get_values()
-        return {row[0]:row[1] for row in data}
+        return {row[0]: gspread.utils.numericise(row[1]) for row in data}
 
 
 

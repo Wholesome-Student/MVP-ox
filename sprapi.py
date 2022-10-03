@@ -25,7 +25,7 @@ class MVPAccessBase():
         self._client_id = None
         self._ishost = False
 
-    def read_state(self) -> dict[str, str]:
+    def read_state(self) -> dict[str, gspread.utils.numericise]:
         """Return state of MVP.
         
         Requests
@@ -72,8 +72,8 @@ class MVPAccessBase():
         data = self._quiz_sheet.get_all_records(numericise_ignore=[2])
         return [{"id": row["id"], "question":row["question"], "answer":row["answer"] == 1} for row in data]
     
-    def read_client(self) -> dict:
-        """Return client state.
+    def read_client(self) -> dict[str, gspread.utils.numericise]:
+        """Return clients state.
         
         Requests
         --------
@@ -83,7 +83,7 @@ class MVPAccessBase():
         Returns
         -------
         state : :class:`dict`
-            state of client.
+            state of clients.
         """
         data = self._init_sheet.get_values()
         return {row[0]: gspread.utils.numericise(row[1]) for row in data}

@@ -39,7 +39,7 @@ class MVPAccessBase():
             state of MVP.
         """
         data = self._state_sheet.get_values()
-        return {row[0]: row[1] for row in data if row[0]}
+        return {row[0]: gspread.utils.numericise(row[1]) for row in data if row[0]}
 
     def read_score(self) -> list[list]:
         """Return score for each client.
@@ -71,6 +71,22 @@ class MVPAccessBase():
         """
         data = self._quiz_sheet.get_all_records(numericise_ignore=[2])
         return [{"id": row["id"], "question":row["question"], "answer":row["answer"] == 1} for row in data]
+    
+    def read_client(self) -> dict:
+        """Return quiz list.
+        
+        Requests
+        --------
+        read requests: 1
+        write requests: 0
+
+        Returns
+        -------
+        state : list[:class:`dict`]
+            list of quiz.
+        """
+        data = self._init_sheet.get_values()
+        return {row[0]:row[1] for row in data}
 
 
 
@@ -99,7 +115,7 @@ class MVPClient(MVPAccessBase):
         self._init_sheet = self._spr.worksheet("init")
 
         state = self.read_state()
-        if state["state_id"] != 10:
+        if state["state_code"] != 10:
             raise RuntimeError("server is not in initialization state.")
         rand = "%02x" % random.randint(0x0,0xff)
         response = self._init_sheet.append_row([rand,1],include_values_in_response=True)
@@ -162,7 +178,7 @@ class MVPClient(MVPAccessBase):
 
 class MVPHost(MVPAccessBase):
     """Host for MVP_Spreadsheet_API.
-    This try to write state_id to 0 when the instance is about to be destroyed.
+    This try to write state_code to 0 when the instance is about to be destroyed.
     
     Requests(init)
     --------
@@ -193,7 +209,7 @@ class MVPHost(MVPAccessBase):
         if int(client_count) <= 0:
             raise ValueError("client_count must be >0.")
         state = self.read_state()
-        if state["state_id"] != 0:
+        if state["state_code"] != 0:
             raise RuntimeError("other server has connected.")
         self._connect = True
         self._ishost = True

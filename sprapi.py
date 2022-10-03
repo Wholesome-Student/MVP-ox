@@ -35,7 +35,7 @@ class MVPAccessBase():
 
         Returns
         -------
-        state : dict[:class:`str`, :class:`str`]
+        state : dict[:class:`str`, :class:`Any`]
             state of MVP.
         """
         data = self._state_sheet.get_values()
@@ -82,7 +82,7 @@ class MVPAccessBase():
 
         Returns
         -------
-        state : :class:`dict`
+        state : dict[:class:`str`, :class:`Any`]
             state of clients.
         """
         data = self._init_sheet.get_values()

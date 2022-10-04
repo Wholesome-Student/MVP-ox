@@ -41,7 +41,7 @@ class MVPAccessBase():
         data = self._state_sheet.get_values()
         return {row[0]: gspread.utils.numericise(row[1]) for row in data if row[0]}
 
-    def read_score(self) -> list[list]:
+    def read_score(self) -> dict[int, list[gspread.utils.numericise]]:
         """Return score for each client.
         
         Requests
@@ -51,10 +51,11 @@ class MVPAccessBase():
 
         Returns
         -------
-        state : list[:class:`list`]
-            list of score for each client.
+        state : dict[:class:`int`, list[:class:`Any`]]
+            dict of score for each client.
         """
-        return self._score_sheet.get_values()
+        data = self._score_sheet.get_values()
+        return {i+1: [gspread.utils.numericise(col) for col in row] for i,row in enumerate(data)}
 
     def read_quiz(self) -> list[dict]:
         """Return quiz list.
@@ -86,7 +87,7 @@ class MVPAccessBase():
             state of clients.
         """
         data = self._init_sheet.get_values()
-        return {row[0]: gspread.utils.numericise(row[1]) for row in data}
+        return {i+1: gspread.utils.numericise(row[1]) for i,row in enumerate(data)}
 
 
 

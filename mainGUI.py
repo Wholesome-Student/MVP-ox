@@ -99,6 +99,10 @@ def mode_client():
     lbl_Load.place(x=480, y=135, anchor=tk.CENTER)
     client_start()
 
+def mode_make():
+    sp.Popen(["python", "make_quiz.py"], shell=True)
+    root.destroy()
+
 def error_back():
     flm_Error.destroy()
     Win_Mode()
@@ -241,7 +245,9 @@ def Win_Mode():
     btn_host = tk.Button(flm_Mode, text="ホスト", font=("Arial", 30), command=mode_host)
     btn_host.place(x=240, y=405, anchor=tk.CENTER)
     btn_client = tk.Button(flm_Mode, text="クライアント", font=("Arial", 30), command=mode_client)
-    btn_client.place(x=720, y=405, anchor=tk.CENTER)
+    btn_client.place(x=480, y=405, anchor=tk.CENTER)
+    btn_make = tk.Button(flm_Mode, text="クイズ作成", font=("Arial", 30), command=mode_make)
+    btn_make.place(x=720, y=405, anchor=tk.CENTER)
 
 def Win_Error():
     global flm_Error
@@ -357,6 +363,8 @@ root.mainloop()
 
 datab = 0
 
+if mode != 1:
+    sys.exit()
 for i in range(len(Quiz_List)):
     while 1:
         data = CLIENT.read_state()

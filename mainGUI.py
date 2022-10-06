@@ -187,6 +187,7 @@ def quiz_next():
         nowquiz += 1
         if nowquiz == len(Quiz_List) + 1:
             flm_Quiz.destroy()
+            
             Win_Result()
             return
         lbl_Num["text"] = nowquiz
@@ -196,6 +197,9 @@ def quiz_next():
         lbl_status["text"] = HOST_MSG
         lbl_QTrue.place(x=240, y=240, anchor=tk.CENTER)
         lbl_QFalse.place(x=720, y=240, anchor=tk.CENTER)
+        data = HOST.read_state()
+        data["time"] = time.time()
+        HOST.write_state(data)
         quiz_timer()
         return
     TIMER -= 1
@@ -219,12 +223,12 @@ def get_client():
         lbl_Cli["text"] = str(len(client_data)) + " / " + str(client_all)
 
 def get_start():
-    global starttime
+    global deltatime
     data = CLIENT.read_state()
     if data["state_code"] == 20:
-        starttime = data["time"]
-        
-        print(starttime)
+        deltatime = data["time"] - time.time()
+        print(deltatime)
+        root.destroy()
     else:
         flm_Step.after(10000, get_start)
 
@@ -344,3 +348,27 @@ def Win_Result():
 Win_Mode()
 root.protocol("WM_DELETE_WINDOW", win_quit)
 root.mainloop()
+
+datab = 0
+
+for i in range(len(Quiz_List)):
+    while 1:
+        data = CLIENT.read_state()
+        if datab != data["time"]:
+            deltatime = data["time"] - time.time()
+            print(deltatime)
+            break
+        else:
+            time.sleep(10)
+
+    time.sleep(20 - deltatime)
+    with open("userInfo.json", "r") as f:
+        ansdata = json.load(f)
+    CLIENT.write_score(ansdata, Quiz_List[i]["answer"])
+    with open("camera_cmd.txt", "w") as f:
+        if Quiz_List[i]["answer"] == 1:
+            f.write("m")
+        else:
+            f.write("v")
+    time.sleep(10)
+    datab = data["time"]

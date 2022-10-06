@@ -91,14 +91,14 @@ with depthai.Device(pipeline) as device:
         key = cv2.waitKey(1)
         if cmd == "q":
             break
-        elif cmd == "a":
-            matchAns = True
         elif cmd == "t":
             matchAns = False
             users = {}
         elif cmd == "m":
             ans = True
+            matchAns = True
         elif cmd == "v":
             ans = False
+            matchAns = True
     
         

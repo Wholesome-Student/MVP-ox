@@ -162,8 +162,8 @@ class MVPClient(MVPAccessBase):
 
         cells = self._score_sheet.range(self._client_id, 1, self._client_id, 4)
 
-        correct = cells[1].numeric_value+answers.count(correct_ans)
-        sum = cells[2].numeric_value+len(answers)
+        correct = (cells[1].numeric_value if cells[1].numeric_value!=None else 0)+answers.count(correct_ans)
+        sum = (cells[2].numeric_value if cells[2].numeric_value!=None else 0)+len(answers)
         rate = correct/sum
 
         cells[0].value = time.time()

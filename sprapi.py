@@ -126,6 +126,10 @@ class MVPClient(MVPAccessBase):
     
     def __del__(self) -> None:
         if self._connect:
+            self.close()
+
+    def close(self) -> None:
+        if self._connect:
             self._init_sheet.update_cell(row=self._client_id, col=2, value=0)
             self._connect = False
 
@@ -221,6 +225,10 @@ class MVPHost(MVPAccessBase):
         self.write_state(state)
 
     def __del__(self) -> None:
+        if self._connect:
+            self.close()
+
+    def close(self) -> None:
         if self._connect:
             self.write_state({"state_code":0})
             self._connect = False

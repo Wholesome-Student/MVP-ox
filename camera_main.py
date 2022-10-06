@@ -52,9 +52,6 @@ with depthai.Device(pipeline) as device:
                 for code in d:
                     userInfo = mvp_qr.qr_decode(code.data.decode("utf-8"))
                     users[userInfo['id']] = userInfo['ans']
-                    writeJsonFile = open("userInfo.json", "w")
-                    json.dump(users, writeJsonFile, ensure_ascii=False, indent=2)
-                    writeJsonFile.close()
 
                     x, y, w, h = code.rect
 
@@ -87,6 +84,9 @@ with depthai.Device(pipeline) as device:
             matchCount = 0
             playerCount = 0
             cv2.imshow("MaruVatuPossible", frame)
+        
+            with open("userInfo.json", "w") as writeJsonFile:
+                json.dump(users, writeJsonFile, ensure_ascii=False, indent=2)
 
         key = cv2.waitKey(1)
         if cmd == "q":

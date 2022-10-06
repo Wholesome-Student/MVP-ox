@@ -214,6 +214,7 @@ class MVPHost(MVPAccessBase):
             raise RuntimeError("other server has connected.")
         self._connect = True
         self._ishost = True
+        self._score_sheet.clear()
         self._init_sheet.resize(rows=1, cols=2)
         self._init_sheet.clear()
         state["state_code"] = 10

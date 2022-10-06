@@ -27,10 +27,14 @@ TIMER = None
 HOST_MSG = None
 Quiz_txt = None
 
+with open("camera_cmd.txt", "w") as f:
+    f.write("")
+
 def win_quit():
     if mode == 0:
         data = HOST.read_state()
         data["state_code"] = 0
+        data["time"] = -1
         HOST.write_state(data)
     elif mode == 1:
         pass
@@ -65,6 +69,9 @@ def readjson():
     with open(quizpath, "r") as f:
         quizdata = json.load(f)
 
+
+        
+
 """ call back """
 def host_start():
     th = threading.Thread(target=host)
@@ -74,6 +81,9 @@ def client_start():
     th = threading.Thread(target=client)
     th.start()
 
+def get_cl():
+    th = threading.Thread(target=get_start)
+    th.start()
 
 """ button's command """
 def mode_host():
@@ -173,7 +183,7 @@ def quiz_trueans():
 def quiz_next():
     global nowquiz, Quiz_txt, HOST_MSG, TIMER
     if TIMER == 0:
-        TIMER = 5
+        TIMER = 15
         nowquiz += 1
         if nowquiz == len(Quiz_List) + 1:
             flm_Quiz.destroy()
@@ -194,8 +204,9 @@ def quiz_next():
 
 def step_next():
     global Quiz_List
-    flm_Step.destroy()
+    #flm_Step.destroy()
     Quiz_List = CLIENT.read_quiz()
+    get_cl()
 
 def get_client():
     client_data = HOST.read_client()
@@ -206,6 +217,18 @@ def get_client():
         btn_ok["state"] = "active"
         lbl_Msg["text"] = "準備が完了しました"
         lbl_Cli["text"] = str(len(client_data)) + " / " + str(client_all)
+
+def get_start():
+    global starttime
+    data = CLIENT.read_state()
+    if data["state_code"] == 20:
+        starttime = data["time"]
+        
+        print(starttime)
+    else:
+        flm_Step.after(10000, get_start)
+
+
 
 """ window """
 def Win_Mode():
@@ -278,13 +301,14 @@ def Win_Step():
     btn_next.place(x=720, y=432, anchor=tk.CENTER)
     sp.Popen(["python", "camera_main.py"], shell=True)
 
+
 def Win_Quiz():
     global flm_Quiz, nowquiz, lbl_QTrue, lbl_QFalse, lbl_Timer, TIMER, HOST_MSG, lbl_status, Quiz_txt, lbl_Quiz, lbl_Num
     HOST_MSG = "回答締め切りまで"
-    TIMER = 5
+    TIMER = 15
     Quiz_txt = Quiz_List[nowquiz-1]["question"]
     data = HOST.read_state()
-    data["finish"] = time.time()
+    data["time"] = time.time()
     HOST.write_state(data)
     flm_Quiz = tk.Frame(root)
     flm_Quiz.pack(expand=1, fill=tk.BOTH)

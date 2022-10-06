@@ -9,6 +9,16 @@ import gspread.utils
 path = os.path.dirname(os.path.abspath(__file__))
 
 
+class MVPSpreadsheetAPIError(Exception):
+    """Base exception class for MVP_Spreadsheet_API."""
+    pass
+
+
+class MVPPermissionError(MVPSpreadsheetAPIError):
+    """Not enough permissions."""
+    pass
+
+
 class MVPAccessBase():
     def __init__(self) -> None:
         self._connect = False

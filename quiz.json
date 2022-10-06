@@ -1,12 +1,197 @@
 [
     {
+        "id": 0,
+        "question": "昔話「桃太郎」には続編がある",
+        "answer": true
+    },
+    {
         "id": 1,
-        "question": "Is this question true?",
-        "answer": false
+        "question": "バスは真ん中よりも前と後ろの方が酔いやすい。",
+        "answer": true
     },
     {
         "id": 2,
-        "question": "AM I YOU?",
+        "question": "バス酔いを防ぐには「オレンジジュース」が効果的である",
+        "answer": false
+    },
+    {
+        "id": 3,
+        "question": "眼鏡を始めて日本に伝えたのは聖徳太子である",
+        "answer": false
+    },
+    {
+        "id": 4,
+        "question": "学校の美術室の窓は太陽光が入るように必ず南向きにある",
+        "answer": false
+    },
+    {
+        "id": 5,
+        "question": "バターは昔、胃薬として使われていたことがある",
+        "answer": false
+    },
+    {
+        "id": 6,
+        "question": "落語家になるには国家試験に合格する必要がある",
+        "answer": false
+    },
+    {
+        "id": 7,
+        "question": "アンパンマンの顔の中身はこしあんである",
+        "answer": false
+    },
+    {
+        "id": 8,
+        "question": "柚子胡椒には胡椒が入っていない",
+        "answer": true
+    },
+    {
+        "id": 9,
+        "question": "アイスクリームの賞味期限は1年である",
+        "answer": false
+    },
+    {
+        "id": 10,
+        "question": "くしゃみの最大速度は、時速100キロの台風より速い。",
+        "answer": true
+    },
+    {
+        "id": 11,
+        "question": "プテラノドンは恐竜である。",
+        "answer": false
+    },
+    {
+        "id": 12,
+        "question": "電柱はお金で買える？",
+        "answer": true
+    },
+    {
+        "id": 13,
+        "question": "1円玉の直径は1センチメートルである。",
+        "answer": false
+    },
+    {
+        "id": 14,
+        "question": "交通事故の発生件数が一番多い都道府県は東京都である。",
+        "answer": false
+    },
+    {
+        "id": 15,
+        "question": "マウスを動かした際の単位には、センチではなく「ミッキー」と言う単位が用いられる。",
+        "answer": true
+    },
+    {
+        "id": 16,
+        "question": "アメリカで過去に10万ドルの紙幣が作られたことがある。",
+        "answer": true
+    },
+    {
+        "id": 17,
+        "question": "歯医者とコンビニでは歯医者のほうが多い。",
+        "answer": true
+    },
+    {
+        "id": 18,
+        "question": "海の塩辛さは変動している。",
+        "answer": false
+    },
+    {
+        "id": 19,
+        "question": "辛いという味覚は存在しない",
+        "answer": true
+    },
+    {
+        "id": 20,
+        "question": "山梨県は首都圏である",
+        "answer": true
+    },
+    {
+        "id": 21,
+        "question": "アルバイト＝学生　　パート＝主婦である",
+        "answer": false
+    },
+    {
+        "id": 22,
+        "question": "「ドラフト」は「描く」と言う意味である",
+        "answer": false
+    },
+    {
+        "id": 23,
+        "question": "昆虫の中には、口で呼吸する昆虫もいる",
+        "answer": false
+    },
+    {
+        "id": 24,
+        "question": "塩は0カロリーである",
+        "answer": true
+    },
+    {
+        "id": 25,
+        "question": "「小中学校は、PTAを作らなければならない」と法律で定められている",
+        "answer": false
+    },
+    {
+        "id": 26,
+        "question": "世界で最も目の良い動物はダチョウである",
+        "answer": true
+    },
+    {
+        "id": 27,
+        "question": "たい焼きは昔は亀の形をした亀焼きだった",
+        "answer": true
+    },
+    {
+        "id": 28,
+        "question": "朝よりも夜の方が身長は高くなる",
+        "answer": false
+    },
+    {
+        "id": 29,
+        "question": "100円玉に描いてある花は桜である",
+        "answer": true
+    },
+    {
+        "id": 30,
+        "question": "キリンの首の骨の数は人間と同じである",
+        "answer": true
+    },
+    {
+        "id": 31,
+        "question": "サザエさんの結婚前の職業はバスガイドである",
+        "answer": false
+    },
+    {
+        "id": 32,
+        "question": "琵琶湖は淡路島より面積が大きい",
+        "answer": true
+    },
+    {
+        "id": 33,
+        "question": "チンパンジーの血液型は全てＡである",
+        "answer": false
+    },
+    {
+        "id": 34,
+        "question": "任天堂のゲームソフトで最も売れたものはスーパーマリオブラザーズである",
+        "answer": false
+    },
+    {
+        "id": 35,
+        "question": "部屋の中に誰もいない状態などをさすガラーンとしているという言葉の語源はお寺から来ている。",
+        "answer": true
+    },
+    {
+        "id": 36,
+        "question": "キリンのツノは2本である",
+        "answer": false
+    },
+    {
+        "id": 37,
+        "question": "パンダの睡眠時間は1日に3時間である",
+        "answer": false
+    },
+    {
+        "id": 38,
+        "question": "猫は国によって食べるものが違う",
         "answer": true
     }
 ]

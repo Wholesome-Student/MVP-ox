@@ -1,13 +1,9 @@
 import numpy as np
 import cv2
-import depthai
 from PIL import Image
 from pyzbar.pyzbar import decode, ZBarSymbol
 import json
-from json import JSONDecodeError
 import mvp_qr
-import time
-import sys
 
 ans = False
 users = {}
@@ -15,78 +11,46 @@ matchAns = False
 playerCount = 0
 matchCount = 0
 
-
-
-pipeline = depthai.Pipeline()
-
-cam_rgb = pipeline.create(depthai.node.ColorCamera)
-cam_rgb.setPreviewSize(1000, 600)
-cam_rgb.setInterleaved(False)
-
-xout_rgb = pipeline.create(depthai.node.XLinkOut)
-xout_rgb.setStreamName("rgb")
-cam_rgb.preview.link(xout_rgb.input)
-
-cam_rgb.setFps(5)
-
-device = depthai.Device(pipeline)
-device.__enter__()
-q_rgb = device.getOutputQueue("rgb")
-
-frame = None
+#Webカメラの読み込み
+cap = cv2.VideoCapture(0,cv2.CAP_DSHOW)
+cap.set(cv2.CAP_PROP_FPS, 5)
+#出力ウィンドウの設定
+cap.set(3,1280)
+cap.set(3,960)
 
 while True:
-    in_rgb = q_rgb.tryGet()
-    if in_rgb is not None:
-        frame = in_rgb.getCvFrame()
-    if frame is not None:
+    ret,frame = cap.read()
+    pil_frame = Image.fromarray(frame[:,:,::-1])
 
-        frame = cv2.cvtColor(frame, cv2.COLOR_BGRA2RGBA)
-        frame = Image.fromarray(frame)
-        frame = frame.convert('RGBA')
-        pil_temp = Image.new('RGBA', frame.size, (255, 255, 255, 0))
-        result = cv2.cvtColor(np.asarray(frame), cv2.COLOR_RGBA2BGRA)
-
-        d = decode(result, symbols=[ZBarSymbol.QRCODE])
-        try:
-            for code in d:
-                userInfo = mvp_qr.qr_decode(code.data.decode("utf-8"))
-                users[userInfo['id']] = userInfo['ans']
-                writeJsonFile = open("userInfo.json", "w")
+    d = decode(cv2.cvtColor(frame, cv2.COLOR_RGBA2GRAY), symbols=[ZBarSymbol.QRCODE])
+    for code in d:
+        userInfo = mvp_qr.qr_decode(code.data.decode("utf-8"))
+        if userInfo['ans']!=None:
+            users[userInfo['id']] = userInfo['ans']
+            with open("userInfo.json", "w") as writeJsonFile:
                 json.dump(users, writeJsonFile, ensure_ascii=False, indent=2)
-                writeJsonFile.close()
 
-                x, y, w, h = code.rect
+            x, y, w, h = code.rect
 
-                playerCount += 1
+            playerCount += 1
 
+            if not matchAns:
+                particle = Image.open('image/particle.png')
+            else:
                 if userInfo['ans'] == ans:
-                    particle = cv2.imread('image/oukan.png', -1)
+                    particle = Image.open('image/oukan.png')
                     matchCount += 1
                 else:
-                    particle = cv2.imread('image/bom.png', -1)
-                if not matchAns:
-                    particle = cv2.imread('image/particle.png', -1)
-                particle = cv2.cvtColor(particle, cv2.COLOR_BGRA2RGBA)
-                particle = Image.fromarray(particle)
-                particle = particle.convert('RGBA')
-                particle = particle.resize((w * 2, h * 2))
+                    particle = Image.open('image/bom.png')
+            particle = particle.resize((w * 2, h * 2))
 
-                pil_temp.paste(particle, (int(x - w / 2), int(y - h / 2)), particle)
-                result = Image.alpha_composite(frame, pil_temp)
-                result = cv2.cvtColor(np.asarray(result), cv2.COLOR_RGBA2BGRA)
-                # cv2.rectangle(result, (x, y), (x + w, y + h), (0, 255, 0), 3)
-        except IndexError:
-            pass
-        result = cv2.cvtColor(np.asarray(result), cv2.COLOR_RGBA2BGRA)
-        frame = cv2.cvtColor(np.asarray(result), cv2.COLOR_RGBA2BGRA)
+            pil_frame.paste(particle, (int(x - w / 2), int(y - h / 2)), particle)
+            # cv2.rectangle(result, (x, y), (x + w, y + h), (0, 255, 0), 3)
+    frame = np.asarray(pil_frame)[:,:,::-1]
 
-        if matchAns and playerCount != 0:
-            cv2.putText(frame, 'rate: ' + str(100 * (matchCount / playerCount)), (10, 30), cv2.FONT_HERSHEY_SIMPLEX,
-                        1, (255, 255, 0), 2)
-        matchCount = 0
-        playerCount = 0
-        cv2.imshow("MaruVatuPossible", frame)
+    matchCount = 0
+    playerCount = 0
+    cv2.imshow("MaruVatuPossible", frame)
 
     key = cv2.waitKey(1)
     if key == ord('q'):
@@ -100,5 +64,3 @@ while True:
         ans = True
     elif key == ord('v'):
         ans = False
-
-

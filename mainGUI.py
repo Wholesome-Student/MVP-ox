@@ -66,7 +66,7 @@ def client():
     
 def readjson():
     global quizdata
-    with open(quizpath, "r") as f:
+    with open(quizpath, "r", encoding="utf-8") as f:
         quizdata = json.load(f)
 
 

@@ -223,11 +223,8 @@ def get_client():
         lbl_Cli["text"] = str(len(client_data)) + " / " + str(client_all)
 
 def get_start():
-    global deltatime
     data = CLIENT.read_state()
     if data["state_code"] == 20:
-        deltatime = data["time"] - time.time()
-        print(deltatime)
         root.destroy()
     else:
         flm_Step.after(10000, get_start)
@@ -336,14 +333,23 @@ def Win_Quiz():
 
 def Win_Result():
     global flm_Result
+    
+    data = HOST.read_score()
+    alist = []
+    for i in data:
+        alist.append(data[i][3])
+    first = alist.index(max(alist))
+    
     flm_Result = tk.Frame(root)
     flm_Result.pack(expand=1, fill=tk.BOTH)
     lbl_Manual01 = tk.Label(flm_Result, text="結果", font=("Arial", 30))
-    lbl_Manual01.place(x=480, y=135, anchor=tk.CENTER)
-    lbl_Manual02 = tk.Label(flm_Result, text="test", font=("Arial", 30))
-    lbl_Manual02.place(x=480, y=270, anchor=tk.CENTER)
-    btn_next = tk.Button(flm_Result, text="test", font=("Arial", 30))
-    btn_next.place(x=720, y=470, anchor=tk.CENTER)
+    lbl_Manual01.place(x=480, y=50, anchor=tk.CENTER)
+    lbl_Manual02 = tk.Label(flm_Result, text="1位 チーム"+str(first), font=("Arial", 30))
+    lbl_Manual02.place(x=480, y=150, anchor=tk.CENTER)
+    lbl_Manual02 = tk.Label(flm_Result, text="Zoomから退出してかまいません", font=("Arial", 30))
+    lbl_Manual02.place(x=480, y=350, anchor=tk.CENTER)
+    btn_next = tk.Button(flm_Result, text="終了", font=("Arial", 30), command=sys.exit)
+    btn_next.place(x=720, y=450, anchor=tk.CENTER)
 
 Win_Mode()
 root.protocol("WM_DELETE_WINDOW", win_quit)
@@ -355,7 +361,7 @@ for i in range(len(Quiz_List)):
     while 1:
         data = CLIENT.read_state()
         if datab != data["time"]:
-            deltatime = data["time"] - time.time()
+            deltatime = time.time() - data["time"]
             print(deltatime)
             break
         else:
@@ -372,3 +378,5 @@ for i in range(len(Quiz_List)):
             f.write("v")
     time.sleep(10)
     datab = data["time"]
+    with open("camera_cmd.txt", "w") as f:
+        f.write("t")

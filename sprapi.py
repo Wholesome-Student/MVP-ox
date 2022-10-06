@@ -1,4 +1,4 @@
-from datetime import datetime
+import time
 import random
 import os.path
 
@@ -108,7 +108,7 @@ class MVPClient(MVPAccessBase):
         super().__init__()
 
         # Google Drive API
-        self._client = gspread.service_account(filename=path+"/237068a500a2.json")
+        self._client = gspread.service_account(filename=path+"/client1.json")
         self._spr = self._client.open("MVP")
         self._state_sheet = self._spr.worksheet("state")
         self._score_sheet = self._spr.worksheet("score")
@@ -166,7 +166,7 @@ class MVPClient(MVPAccessBase):
         sum = cells[2].numeric_value+len(answers)
         rate = correct/sum
 
-        cells[0].value = datetime.now().isoformat()
+        cells[0].value = time.time()
         cells[1].value = correct
         cells[2].value = sum
         cells[3].value = rate
@@ -200,7 +200,7 @@ class MVPHost(MVPAccessBase):
         super().__init__()
 
         # Google Drive API
-        self._client = gspread.service_account(filename=path+"/320085d13180.json")
+        self._client = gspread.service_account(filename=path+"/host.json")
         self._spr = self._client.open("MVP")
         self._state_sheet = self._spr.worksheet("state")
         self._score_sheet = self._spr.worksheet("score")

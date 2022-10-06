@@ -7,6 +7,7 @@ import json
 from json import JSONDecodeError
 import mvp_qr
 import time
+import sys
 
 ans = False
 users = {}
@@ -28,13 +29,13 @@ cam_rgb.preview.link(xout_rgb.input)
 
 cam_rgb.setFps(5)
 
-device = depthai.Device(pipeline).__enter__()
+device = depthai.Device(pipeline)
+device.__enter__()
 q_rgb = device.getOutputQueue("rgb")
 
 frame = None
 
-def mainloop():
-    global frame, cam_rgb, device, q_rgb, xout_rgb, pipeline, matchAns
+while True:
     in_rgb = q_rgb.tryGet()
     if in_rgb is not None:
         frame = in_rgb.getCvFrame()
@@ -89,7 +90,7 @@ def mainloop():
 
     key = cv2.waitKey(1)
     if key == ord('q'):
-        return 1
+        break
     elif key == ord('a'):
         matchAns = True
     elif key == ord('t'):
@@ -99,10 +100,5 @@ def mainloop():
         ans = True
     elif key == ord('v'):
         ans = False
-    return 0
 
-while 1:
-    if mainloop():
-        break
 
-depthai.Device(pipeline).__exit__()

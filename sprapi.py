@@ -164,7 +164,7 @@ class MVPClient(MVPAccessBase):
 
         correct = (cells[1].numeric_value if cells[1].numeric_value!=None else 0)+answers.count(correct_ans)
         sum = (cells[2].numeric_value if cells[2].numeric_value!=None else 0)+len(answers)
-        rate = correct/sum
+        rate = correct/sum if correct!=0 else 0
 
         cells[0].value = time.time()
         cells[1].value = correct
@@ -179,7 +179,6 @@ class MVPClient(MVPAccessBase):
 
 class MVPHost(MVPAccessBase):
     """Host for MVP_Spreadsheet_API.
-    This try to write state_code to 0 when the instance is about to be destroyed.
     
     Requests(init)
     --------

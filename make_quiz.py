@@ -31,10 +31,9 @@ def set_quiz():
     else:
         if index!=tk.END:
             quizzes[index]=[ques,ans]
-            quiz_box.delete(index)
         else:
             quizzes.append([ques,ans])
-        quiz_box.insert(index,ques)
+        reset()
         end_edit()
 
 def end_edit():
@@ -56,7 +55,7 @@ def del_quiz():
     idx=quiz_box.curselection()
     if idx:
         quizzes.pop(idx[0])
-        quiz_box.delete(idx[0])
+        reset()
 
 def open_file():
     global quizzes

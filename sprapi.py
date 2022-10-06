@@ -9,16 +9,6 @@ import gspread.utils
 path = os.path.dirname(os.path.abspath(__file__))
 
 
-class MVPSpreadsheetAPIError(Exception):
-    """Base exception class for MVP_Spreadsheet_API."""
-    pass
-
-
-class MVPPermissionError(MVPSpreadsheetAPIError):
-    """Not enough permissions."""
-    pass
-
-
 class MVPAccessBase():
     def __init__(self) -> None:
         self._connect = False
@@ -123,10 +113,6 @@ class MVPClient(MVPAccessBase):
         updatedData = response["updates"]["updatedData"]
         self._connect = True
         self._client_id = gspread.utils.a1_to_rowcol(updatedData["range"].split("!")[-1])[0]
-    
-    def __del__(self) -> None:
-        if self._connect:
-            self.close()
 
     def close(self) -> None:
         if self._connect:
@@ -223,10 +209,6 @@ class MVPHost(MVPAccessBase):
         state["state_code"] = 10
         state["clients_count"] = int(client_count)
         self.write_state(state)
-
-    def __del__(self) -> None:
-        if self._connect:
-            self.close()
 
     def close(self) -> None:
         if self._connect:

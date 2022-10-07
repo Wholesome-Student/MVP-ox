@@ -79,7 +79,6 @@ def save_file():
         with open(quizpath, "w", encoding="utf-8") as f:
             json.dump([{"id":i,"question":quiz[0],"answer":quiz[1]} for i,quiz in enumerate(quizzes)],f,ensure_ascii=False,indent=4)
     except Exception as e:
-        print(e)
         messagebox.showerror("file error","保存に失敗しました")
     else:
         messagebox.showinfo("save","保存しました")

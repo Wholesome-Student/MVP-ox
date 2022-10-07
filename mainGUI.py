@@ -37,7 +37,7 @@ def win_quit():
         data["time"] = -1
         HOST.write_state(data)
     elif mode == 1:
-        with open("camera_main.py", "w") as f:
+        with open("camera_cmd.py", "w") as f:
             f.write("q")
     sys.exit()
 

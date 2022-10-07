@@ -178,15 +178,26 @@ def quiz_camdata():
     lbl_Timer["text"] = TIMER
     lbl_Timer.after(1000, quiz_camdata)
 
+msg = ""
 def quiz_trueans():
     global TIMER, HOST_MSG
     if TIMER == 0:
         TIMER = 5
         HOST_MSG = "次の問題まで"
         lbl_status["text"] = HOST_MSG
+        data = HOST.read_score()
+        alist = []
+        msg = ""
+        for i in data:
+            alist.append(data[i][3])
+        for i in range(len(alist)):
+            msg += "チーム"+str(i+1)+" "+format(alist[i] * 100, "7.3f")+"%\n"
+        lbl_rank["text"] = msg
         quiz_next()
         return
+    
     TIMER -= 1
+    
     lbl_Timer["text"] = TIMER
     lbl_Timer.after(1000, quiz_trueans)
 
@@ -202,6 +213,8 @@ def quiz_next():
             return
         lbl_Num["text"] = nowquiz
         Quiz_txt = Quiz_List[nowquiz-1]["question"]
+        if len(Quiz_txt) > 23:
+            Quiz_txt=Quiz_txt[:23]+"\n"+Quiz_txt[23:]
         lbl_Quiz["text"] = Quiz_txt
         HOST_MSG = "回答締め切りまで"
         lbl_status["text"] = HOST_MSG
@@ -327,19 +340,21 @@ def Win_Step():
 
 
 def Win_Quiz():
-    global flm_Quiz, nowquiz, lbl_QTrue, lbl_QFalse, lbl_Timer, TIMER, HOST_MSG, lbl_status, Quiz_txt, lbl_Quiz, lbl_Num
+    global flm_Quiz, nowquiz, lbl_QTrue, lbl_QFalse, lbl_Timer, TIMER, HOST_MSG, lbl_status, Quiz_txt, lbl_Quiz, lbl_Num, lbl_rank
     HOST_MSG = "回答締め切りまで"
     TIMER = 15
     Quiz_txt = Quiz_List[nowquiz-1]["question"]
+    if len(Quiz_txt) > 23:
+        Quiz_txt=Quiz_txt[:23]+"\n"+Quiz_txt[23:]
     data = HOST.read_state()
     data["time"] = time.time()
     HOST.write_state(data)
     flm_Quiz = tk.Frame(root)
     flm_Quiz.pack(expand=1, fill=tk.BOTH)
     lbl_Num = tk.Label(flm_Quiz, text=nowquiz, font=("Arial", 30))
-    lbl_Num.place(x=100, y=100, anchor=tk.CENTER)
+    lbl_Num.place(x=100, y=500, anchor=tk.CENTER)
     lbl_Quiz = tk.Label(flm_Quiz, text=Quiz_txt, font=("Arial", 30))
-    lbl_Quiz.place(x=480, y=100, anchor=tk.CENTER)
+    lbl_Quiz.place(x=480, y=80, anchor=tk.CENTER)
     img_true = tk.PhotoImage(file="image/true.png")
     lbl_QTrue = tk.Label(flm_Quiz, width=200, height=200, image=img_true)
     lbl_QTrue.photo = img_true
@@ -349,11 +364,12 @@ def Win_Quiz():
     lbl_QFalse.photo = img_false
     lbl_QFalse.place(x=720, y=240, anchor=tk.CENTER)
     lbl_Timer = tk.Label(flm_Quiz, text=TIMER, font=("Arial", 30))
-    lbl_Timer.place(x=480, y=360, anchor=tk.CENTER)
+    lbl_Timer.place(x=480, y=240, anchor=tk.CENTER)
     lbl_Timer.after(1000, quiz_timer)
     lbl_status = tk.Label(flm_Quiz, text=HOST_MSG, font=("Arial", 30))
-    lbl_status.place(x=480, y=500, anchor=tk.CENTER)
-
+    lbl_status.place(x=480, y=180, anchor=tk.CENTER)
+    lbl_rank = tk.Label(flm_Quiz, text="", font=("Arial", 30))
+    lbl_rank.place(x=480, y=440, anchor=tk.CENTER)
 def Win_Result():
     global flm_Result
     
@@ -367,7 +383,7 @@ def Win_Result():
     flm_Result.pack(expand=1, fill=tk.BOTH)
     lbl_Manual01 = tk.Label(flm_Result, text="結果", font=("Arial", 30))
     lbl_Manual01.place(x=480, y=50, anchor=tk.CENTER)
-    lbl_Manual02 = tk.Label(flm_Result, text="1位 チーム"+str(first+1), font=("Arial", 30))
+    lbl_Manual02 = tk.Label(flm_Result, text="チーム"+str(first+1)+"の勝ち", font=("Arial", 30))
     lbl_Manual02.place(x=480, y=150, anchor=tk.CENTER)
     lbl_Manual02 = tk.Label(flm_Result, text="Zoomから退出してかまいません", font=("Arial", 30))
     lbl_Manual02.place(x=480, y=350, anchor=tk.CENTER)

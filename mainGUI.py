@@ -53,12 +53,13 @@ def host():
         mode = 0
 
 def client():
-    global CLIENT, mode
+    global CLIENT, mode, team_num
     try:
         CLIENT = sa.MVPClient()
+        team_num = CLIENT.client_id
     except:
         flm_Load.destroy()
-        Win_Error()
+        Win_Error2()
     else:
         flm_Load.destroy()
         Win_Step()
@@ -105,6 +106,10 @@ def mode_make():
 
 def error_back():
     flm_Error.destroy()
+    Win_Mode()
+
+def error_back2():
+    flm_Error2.destroy()
     Win_Mode()
 
 def count_cl():
@@ -243,11 +248,11 @@ def Win_Mode():
     lbl_Title = tk.Label(flm_Mode, text="モードを選択してください", font=("Arial", 30))
     lbl_Title.place(x=480, y=135, anchor=tk.CENTER)
     btn_host = tk.Button(flm_Mode, text="ホスト", font=("Arial", 30), command=mode_host)
-    btn_host.place(x=240, y=405, anchor=tk.CENTER)
+    btn_host.place(x=240, y=340, anchor=tk.CENTER)
     btn_client = tk.Button(flm_Mode, text="クライアント", font=("Arial", 30), command=mode_client)
-    btn_client.place(x=480, y=405, anchor=tk.CENTER)
+    btn_client.place(x=720, y=340, anchor=tk.CENTER)
     btn_make = tk.Button(flm_Mode, text="クイズ作成", font=("Arial", 30), command=mode_make)
-    btn_make.place(x=720, y=405, anchor=tk.CENTER)
+    btn_make.place(x=480, y=450, anchor=tk.CENTER)
 
 def Win_Error():
     global flm_Error
@@ -257,6 +262,15 @@ def Win_Error():
     lbl_Error.place(x=480, y=135, anchor=tk.CENTER)
     btn_back = tk.Button(flm_Error, text="ホーム画面に戻る", font=("Arial", 30), command=error_back)
     btn_back.place(x=720, y=405, anchor=tk.CENTER)
+
+def Win_Error2():
+    global flm_Error2
+    flm_Error2 = tk.Frame(root)
+    flm_Error2.pack(expand=1, fill=tk.BOTH)
+    lbl_Error2 = tk.Label(flm_Error2, text="ホストが開始されていません", font=("Arial", 30))
+    lbl_Error2.place(x=480, y=135, anchor=tk.CENTER)
+    btn_back2 = tk.Button(flm_Error2, text="ホーム画面に戻る", font=("Arial", 30), command=error_back2)
+    btn_back2.place(x=720, y=405, anchor=tk.CENTER)
 
 def Win_Manual():
     global flm_Manual
@@ -304,6 +318,8 @@ def Win_Step():
     lbl_Step01.place(x=480, y=108, anchor=tk.CENTER)
     lbl_Step02 = tk.Label(flm_Step, text="②カメラウィンドウを画面共有", font=("Arial", 30))
     lbl_Step02.place(x=480, y=216, anchor=tk.CENTER)
+    lbl_Step03 = tk.Label(flm_Step, text="チーム番号は"+str(team_num)+"番です", font=("Arial", 30))
+    lbl_Step03.place(x=480, y=324, anchor=tk.CENTER)
     btn_next = tk.Button(flm_Step, text="次へ", font=("Arial", 30), command=step_next)
     btn_next.place(x=720, y=432, anchor=tk.CENTER)
     sp.Popen(["python", "camera_main.py"], shell=True)
@@ -350,7 +366,7 @@ def Win_Result():
     flm_Result.pack(expand=1, fill=tk.BOTH)
     lbl_Manual01 = tk.Label(flm_Result, text="結果", font=("Arial", 30))
     lbl_Manual01.place(x=480, y=50, anchor=tk.CENTER)
-    lbl_Manual02 = tk.Label(flm_Result, text="1位 チーム"+str(first), font=("Arial", 30))
+    lbl_Manual02 = tk.Label(flm_Result, text="1位 チーム"+str(first+1), font=("Arial", 30))
     lbl_Manual02.place(x=480, y=150, anchor=tk.CENTER)
     lbl_Manual02 = tk.Label(flm_Result, text="Zoomから退出してかまいません", font=("Arial", 30))
     lbl_Manual02.place(x=480, y=350, anchor=tk.CENTER)

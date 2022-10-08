@@ -6,7 +6,7 @@ from pyzbar.pyzbar import decode, ZBarSymbol
 import json
 from json import JSONDecodeError
 import mvp_qr
-import time
+import sys
 
 ans = False
 users = {}
@@ -28,14 +28,20 @@ cam_rgb.preview.link(xout_rgb.input)
 
 cam_rgb.setFps(15)
 
-with depthai.Device(pipeline) as device:
-    q_rgb = device.getOutputQueue("rgb")
+try:
+    device = depthai.Device(pipeline)
+except RuntimeError:
+    print("カメラを認識していません")
+    sys.exit()
+device.__enter__()
+q_rgb = device.getOutputQueue("rgb")
 
-    frame = None
+frame = None
 
-    while True:
-        with open("camera_cmd.txt", "r") as f:
-            cmd = f.read()
+while True:
+    with open("camera_cmd.txt", "r") as f:
+        cmd = f.read()
+    try:
         in_rgb = q_rgb.tryGet()
         if in_rgb is not None:
             frame = in_rgb.getCvFrame()
@@ -100,5 +106,15 @@ with depthai.Device(pipeline) as device:
         elif cmd == "v":
             ans = False
             matchAns = True
-    
-        
+    except:
+        print("カメラが外されました")
+        device.__exit__(None, None, None)
+        sys.exit()
+
+"""
+except RuntimeError:
+print("カメラが認識できません")
+sys.exit()
+except Exception as error:
+print(type(error))
+"""

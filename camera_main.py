@@ -22,6 +22,8 @@ BOM=2
 
 with open("camera_cmd.txt", "w") as f:
     pass
+with open("error.log", "w") as f:
+    pass
 
 ring_img=Image.open('image/particle.png')
 oukan_img=Image.open('image/oukan.png')
@@ -54,6 +56,8 @@ frame = None
 while True:
     with open("camera_cmd.txt", "r") as f:
         cmd = f.read()
+    with open("camera_cmd.txt", "w") as f:
+        pass
     try:
         in_rgb = q_rgb.tryGet()
         if in_rgb is not None:
@@ -123,6 +127,8 @@ while True:
         device.__exit__(None, None, None)
         sys.exit()
     except KeyboardInterrupt:
+        with open("error.log", "w", encoding="utf-8") as f:
+            f.write("-1")
         print("強制終了します")
         device.__exit__(None, None, None)
         sys.exit()

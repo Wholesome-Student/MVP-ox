@@ -30,10 +30,7 @@ Quiz_txt = None
 
 def win_quit():
     if mode == 0:
-        data = HOST.read_state()
-        data["state_code"] = 0
-        data["time"] = -1
-        HOST.write_state(data)
+        HOST.write_state({"state_code": 0})
     elif mode == 1:
         with open("camera_cmd.txt", "w") as f:
             f.write("q")
@@ -248,17 +245,15 @@ def get_start():
         flm_Step.after(10000, get_start)
 
 def sub_get():
-    with open("error_log.txt", "r") as f:
+    with open("error.log", "r") as f:
         data = f.read()
-    if data == "1":
-        print(1)
-    elif data == "2":
-        print(2)
-    elif data == "-1":
+    if data:
+        if data=="-1":
+            win_quit()
+        else:
+            print(data)
+    else:
         flm_Camera.after(1000, sub_get)
-    elif data == 0:
-        print(0)
-        return 1
 
 """ window """
 def Win_Mode():
@@ -388,6 +383,8 @@ def Win_Quiz():
     lbl_rank.place(x=480, y=440, anchor=tk.CENTER)
 def Win_Result():
     global flm_Result
+
+    HOST.write_state({"state_code": 0})
     
     data = HOST.read_score()
     alist = []

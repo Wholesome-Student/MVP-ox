@@ -26,8 +26,7 @@ TIMER = None
 HOST_MSG = None
 Quiz_txt = None
 
-with open("camera_cmd.txt", "w") as f:
-    f.write("")
+
 
 def win_quit():
     if mode == 0:
@@ -76,6 +75,10 @@ def client_start():
 
 def get_cl():
     th = threading.Thread(target=get_start)
+    th.start()
+
+def cam_err():
+    th = threading.Thread(target=sub_get)
     th.start()
 
 """ button's command """
@@ -244,7 +247,18 @@ def get_start():
     else:
         flm_Step.after(10000, get_start)
 
-
+def sub_get():
+    with open("error_log.txt", "r") as f:
+        data = f.read()
+    if data == "1":
+        print(1)
+    elif data == "2":
+        print(2)
+    elif data == "-1":
+        flm_Camera.after(1000, sub_get)
+    elif data == 0:
+        print(0)
+        return 1
 
 """ window """
 def Win_Mode():
@@ -317,14 +331,16 @@ def Win_HWait():
     get_client()    
 
 def Win_Camera():
-    global flm_Camera
+    global flm_Camera, cam_pro
     flm_Camera = tk.Frame(root)
     flm_Camera.pack(expand=1, fill=tk.BOTH)
     lbl_Step01 = tk.Label(flm_Camera, text="カメラのチェック中です...", font=("Arial", 30))
     lbl_Step01.place(x=480, y=108, anchor=tk.CENTER)
     btn_next = tk.Button(flm_Camera, text="次へ", font=("Arial", 30), command=camera_next)
     btn_next.place(x=720, y=450, anchor=tk.CENTER)
-    sp.Popen(["python", "camera_main.py"], shell=True)
+    cam_pro = sp.Popen(["python", "camera_main.py"], shell=True)
+    cam_err()
+
 
 def Win_Step():
     global flm_Step, Quiz_List

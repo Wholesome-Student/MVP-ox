@@ -10,11 +10,22 @@ import sys
 
 ans = False
 users = {}
+effects = {}
 matchAns = False
 playerCount = 0
 matchCount = 0
 
+effect_time=5
+RING=0
+OUKAN=1
+BOM=2
 
+with open("camera_cmd.txt", "w") as f:
+    pass
+
+ring_img=Image.open('image/particle.png')
+oukan_img=Image.open('image/oukan.png')
+bom_img=Image.open('image/bom.png')
 
 pipeline = depthai.Pipeline()
 
@@ -31,6 +42,8 @@ cam_rgb.setFps(15)
 try:
     device = depthai.Device(pipeline)
 except RuntimeError:
+    with open("error.log", "w", encoding="utf-8") as f:
+        f.write("カメラを認識していません")
     print("カメラを認識していません")
     sys.exit()
 device.__enter__()
@@ -46,47 +59,40 @@ while True:
         if in_rgb is not None:
             frame = in_rgb.getCvFrame()
         if frame is not None:
+            pil_frame = Image.fromarray(frame[:,:,::-1])
 
-            frame = cv2.cvtColor(frame, cv2.COLOR_BGRA2RGBA)
-            frame = Image.fromarray(frame)
-            frame = frame.convert('RGBA')
-            pil_temp = Image.new('RGBA', frame.size, (255, 255, 255, 0))
-            result = cv2.cvtColor(np.asarray(frame), cv2.COLOR_RGBA2BGRA)
-
-            d = decode(result, symbols=[ZBarSymbol.QRCODE])
-            try:
-                for code in d:
-                    userInfo = mvp_qr.qr_decode(code.data.decode("utf-8"))
+            d = decode(cv2.cvtColor(frame, cv2.COLOR_RGBA2GRAY), symbols=[ZBarSymbol.QRCODE])
+            for code in d:
+                userInfo = mvp_qr.qr_decode(code.data.decode("utf-8"))
+                if userInfo['ans']!=None:
                     users[userInfo['id']] = userInfo['ans']
 
-                    x, y, w, h = code.rect
-
-                    playerCount += 1
-
-                    if userInfo['ans'] == ans:
-                        particle = cv2.imread('image/oukan.png', -1)
-                        matchCount += 1
-                    else:
-                        particle = cv2.imread('image/bom.png', -1)
                     if not matchAns:
-                        particle = cv2.imread('image/particle.png', -1)
-                    particle = cv2.cvtColor(particle, cv2.COLOR_BGRA2RGBA)
-                    particle = Image.fromarray(particle)
-                    particle = particle.convert('RGBA')
-                    particle = particle.resize((w * 2, h * 2))
+                        effects[userInfo['id']]=[RING, effect_time, *code.rect]
+                    else:
+                        if userInfo['ans'] == ans:
+                            effects[userInfo['id']]=[OUKAN, effect_time, *code.rect]
+                        else:
+                            effects[userInfo['id']]=[BOM, effect_time, *code.rect]
+                    
+            for id in effects:
+                ef=effects[id]
+                if ef[1]!=0:
+                    print(ef)
+                    playerCount += 1
+                    ef[1]-=1
+                    if ef[0]==RING:
+                        particle = ring_img
+                    elif ef[0]==OUKAN:
+                        particle = oukan_img
+                        matchCount += 1
+                    elif ef[0]==BOM:
+                        particle = bom_img
+                    particle = particle.resize((ef[4] * 2, ef[5] * 2))
+                    pil_frame.paste(particle, (int(ef[2] - ef[4] / 2), int(ef[3] - ef[5] / 2)), particle)
+            
+            frame = np.asarray(pil_frame)[:,:,::-1]
 
-                    pil_temp.paste(particle, (int(x - w / 2), int(y - h / 2)), particle)
-                    result = Image.alpha_composite(frame, pil_temp)
-                    result = cv2.cvtColor(np.asarray(result), cv2.COLOR_RGBA2BGRA)
-                    # cv2.rectangle(result, (x, y), (x + w, y + h), (0, 255, 0), 3)
-            except IndexError:
-                pass
-            result = cv2.cvtColor(np.asarray(result), cv2.COLOR_RGBA2BGRA)
-            frame = cv2.cvtColor(np.asarray(result), cv2.COLOR_RGBA2BGRA)
-
-            if matchAns and playerCount != 0:
-                cv2.putText(frame, 'rate: ' + str(100 * (matchCount / playerCount)), (10, 30), cv2.FONT_HERSHEY_SIMPLEX,
-                            1, (255, 255, 0), 2)
             matchCount = 0
             playerCount = 0
             cv2.imshow("MaruVatuPossible", frame)
@@ -95,19 +101,33 @@ while True:
                 json.dump(users, writeJsonFile, ensure_ascii=False, indent=2)
 
         key = cv2.waitKey(1)
+        if key!=-1:
+            cmd = chr(key)
         if cmd == "q":
             break
         elif cmd == "t":
             matchAns = False
             users = {}
+            effects = {}
         elif cmd == "m":
             ans = True
             matchAns = True
         elif cmd == "v":
             ans = False
             matchAns = True
-    except:
+    except RuntimeError as e:
+        with open("error.log", "w", encoding="utf-8") as f:
+            f.write("カメラが外されました")
+        print(e)
         print("カメラが外されました")
+        device.__exit__(None, None, None)
+        sys.exit()
+    except KeyboardInterrupt:
+        print("強制終了します")
+        device.__exit__(None, None, None)
+        sys.exit()
+    except Exception as e:
+        print(e)
         device.__exit__(None, None, None)
         sys.exit()
 

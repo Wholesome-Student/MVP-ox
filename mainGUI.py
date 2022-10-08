@@ -14,7 +14,6 @@ import sprapi as sa
 import time
 import threading
 import sys
-import cv2
 import subprocess as sp
 
 root = tk.Tk()
@@ -63,16 +62,8 @@ def client():
         Win_Error2()
     else:
         flm_Load.destroy()
-        Win_Step()
+        Win_Camera()
         mode = 1
-    
-def readjson():
-    global quizdata
-    with open(quizpath, "r", encoding="utf-8") as f:
-        quizdata = json.load(f)
-
-
-        
 
 """ call back """
 def host_start():
@@ -130,16 +121,16 @@ def cnum_ok():
 
 def manual_dia():
     global quizpath
-    typ = [('クイズファイル','*.json')] 
-    dir = './'
-    quizpath = filedialog.askopenfilename(filetypes = typ, initialdir = dir)
+    quizpath = filedialog.askopenfilename(filetypes = [('クイズファイル','*.json')] , initialdir = './')
 
 def manual_next():
-    global Quiz_List
+    global Quiz_List, quizdata
     flm_Manual.destroy()
-    if quizpath != None:
-        readjson()
-        HOST.write_quiz(quizdata)
+    print(quizpath)
+    print(type(quizpath))
+    if quizpath != None and quizpath != "":
+        with open(quizpath, "r", encoding="utf-8") as f:
+            quizdata = json.load(f)
     Quiz_List = HOST.read_quiz()
     Win_HWait()
 
@@ -149,6 +140,10 @@ def hwait_ok():
     data["state_code"] = 20
     HOST.write_state(data)
     Win_Quiz()
+
+def camera_next():
+    flm_Camera.destroy()
+    Win_Step()
 
 def quiz_timer():
     global TIMER, HOST_MSG
@@ -230,10 +225,7 @@ def quiz_next():
     lbl_Timer.after(1000, quiz_next)
 
 def step_next():
-    global Quiz_List
-    #flm_Step.destroy()
-    Quiz_List = CLIENT.read_quiz()
-    get_cl()
+    pass
 
 def get_client():
     client_data = HOST.read_client()
@@ -324,8 +316,19 @@ def Win_HWait():
     btn_ok.place(x=480, y=350, anchor=tk.CENTER)
     get_client()    
 
+def Win_Camera():
+    global flm_Camera
+    flm_Camera = tk.Frame(root)
+    flm_Camera.pack(expand=1, fill=tk.BOTH)
+    lbl_Step01 = tk.Label(flm_Camera, text="カメラのチェック中です...", font=("Arial", 30))
+    lbl_Step01.place(x=480, y=108, anchor=tk.CENTER)
+    btn_next = tk.Button(flm_Camera, text="次へ", font=("Arial", 30), command=camera_next)
+    btn_next.place(x=720, y=450, anchor=tk.CENTER)
+    sp.Popen(["python", "camera_main.py"], shell=True)
+
 def Win_Step():
-    global flm_Step
+    global flm_Step, Quiz_List
+    Quiz_List = CLIENT.read_quiz()
     flm_Step = tk.Frame(root)
     flm_Step.pack(expand=1, fill=tk.BOTH)
     lbl_Step01 = tk.Label(flm_Step, text="①Zoomで会議に参加", font=("Arial", 30))
@@ -334,10 +337,7 @@ def Win_Step():
     lbl_Step02.place(x=480, y=216, anchor=tk.CENTER)
     lbl_Step03 = tk.Label(flm_Step, text="チーム番号は"+str(team_num)+"番です", font=("Arial", 30))
     lbl_Step03.place(x=480, y=324, anchor=tk.CENTER)
-    btn_next = tk.Button(flm_Step, text="次へ", font=("Arial", 30), command=step_next)
-    btn_next.place(x=720, y=432, anchor=tk.CENTER)
-    sp.Popen(["python", "camera_main.py"], shell=True)
-
+    get_cl()
 
 def Win_Quiz():
     global flm_Quiz, nowquiz, lbl_QTrue, lbl_QFalse, lbl_Timer, TIMER, HOST_MSG, lbl_status, Quiz_txt, lbl_Quiz, lbl_Num, lbl_rank

@@ -19,6 +19,7 @@ effect_time=5
 RING=0
 OUKAN=1
 BOM=2
+HEART=3
 
 with open("camera_cmd.txt", "w") as f:
     pass
@@ -28,6 +29,7 @@ with open("error.log", "w") as f:
 ring_img=Image.open('image/particle.png')
 oukan_img=Image.open('image/oukan.png')
 bom_img=Image.open('image/bom.png')
+heart_img=Image.open('image/heart.png')
 
 pipeline = depthai.Pipeline()
 
@@ -78,7 +80,8 @@ while True:
                             effects[userInfo['id']]=[OUKAN, effect_time, *code.rect]
                         else:
                             effects[userInfo['id']]=[BOM, effect_time, *code.rect]
-                    
+                else:
+                    effects[userInfo['id']]=[HEART, effect_time, *code.rect]
             for id in effects:
                 ef=effects[id]
                 if ef[1]!=0:
@@ -92,6 +95,8 @@ while True:
                         matchCount += 1
                     elif ef[0]==BOM:
                         particle = bom_img
+                    elif ef[0]==HEART:
+                        particle = heart_img
                     particle = particle.resize((ef[4] * 2, ef[5] * 2))
                     pil_frame.paste(particle, (int(ef[2] - ef[4] / 2), int(ef[3] - ef[5] / 2)), particle)
             

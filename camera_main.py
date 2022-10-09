@@ -85,7 +85,7 @@ while True:
             for id in effects:
                 ef=effects[id]
                 if ef[1]!=0:
-                    print(ef)
+                    #print(ef)
                     playerCount += 1
                     ef[1]-=1
                     if ef[0]==RING:

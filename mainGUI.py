@@ -768,4 +768,4 @@ if __name__ == "__main__":
     Win_Mode()
     root.protocol("WM_DELETE_WINDOW", win_quit)
     root.mainloop()
-
+    Ans_Send()

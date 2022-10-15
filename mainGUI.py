@@ -283,7 +283,7 @@ def hwait_ok():
     Win_Quiz()
 
 def camera_next():
-    flm_Camera.destroy()
+    #flm_Camera.destroy()
     Win_Step()
 
 def quiz_timer():
@@ -667,6 +667,7 @@ def Win_Camera():
     次へ: -> Win_Step()
     """
     global flm_Camera, cam_pro
+    """
     flm_Camera = tk.Frame(root)
     flm_Camera.pack(expand=1, fill=tk.BOTH)
     lbl_Step01 = tk.Label(flm_Camera, text="カメラのチェック中です...", font=("Arial", 30))
@@ -674,7 +675,10 @@ def Win_Camera():
     btn_next = tk.Button(flm_Camera, text="次へ", font=("Arial", 30), command=camera_next)
     btn_next.place(x=720, y=450, anchor=tk.CENTER)
     cam_pro = sp.Popen(["python", "camera_main.py"], shell=True)
-    cam_err()
+    """
+    #cam_err()
+    camera_next()
+
 
 def Win_Step():
     """

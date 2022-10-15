@@ -24,7 +24,7 @@ def win_quit():
     if mode == 0:
         HOST.write_state({"state_code": 0})
     elif mode == 1:
-        with open("camera_cmd.txt", "w") as f:
+        with open("camera_cmd.txt", "w", encoding="utf-8") as f:
             f.write("q")
     sys.exit()
 
@@ -385,7 +385,7 @@ def get_start():
         flm_Step.after(10000, get_start)
 
 def sub_get():
-    with open("error.log", "r") as f:
+    with open("error.log", "r", encoding="utf-8") as f:
         data = f.read()
     if data:
         if data=="-1":
@@ -739,17 +739,17 @@ def Ans_Send():
                 time.sleep(10)
 
         time.sleep(20 - deltatime)
-        with open("userInfo.json", "r") as f:
+        with open("userInfo.json", "r", encoding="utf-8") as f:
             ansdata = json.load(f)
         CLIENT.write_score(ansdata, Quiz_List[i]["answer"])
-        with open("camera_cmd.txt", "w") as f:
+        with open("camera_cmd.txt", "w", encoding="utf-8") as f:
             if Quiz_List[i]["answer"] == 1:
                 f.write("m")
             else:
                 f.write("v")
         time.sleep(10)
         datab = data["time"]
-        with open("camera_cmd.txt", "w") as f:
+        with open("camera_cmd.txt", "w", encoding="utf-8") as f:
             f.write("t")
 
 """

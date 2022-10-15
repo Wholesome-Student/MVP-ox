@@ -701,7 +701,6 @@ def Win_Step():
     (クイズ開始後):
     """
     global flm_Step, Quiz_List
-    Quiz_List = CLIENT.read_quiz()
     flm_Step = tk.Frame(root)
     flm_Step.pack(expand=1, fill=tk.BOTH)
     lbl_Step01 = tk.Label(flm_Step, text="①Zoomで会議に参加", font=("Arial", 30))
@@ -730,6 +729,7 @@ def Ans_Send():
     --------
     (クイズ終了後):camera_main.pyを終了する
     """
+    Quiz_List = CLIENT.read_quiz()
     datab = 0
 
     if mode != 1:
@@ -757,6 +757,7 @@ def Ans_Send():
         datab = data["time"]
         with open("camera_cmd.txt", "w", encoding="utf-8") as f:
             f.write("t")
+    time.sleep(5)
     with open("camera_cmd.txt", "w", encoding="utf-8") as f:
         f.write("q")
 

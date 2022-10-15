@@ -757,6 +757,8 @@ def Ans_Send():
         datab = data["time"]
         with open("camera_cmd.txt", "w", encoding="utf-8") as f:
             f.write("t")
+    with open("camera_cmd.txt", "w", encoding="utf-8") as f:
+        f.write("q")
 
 """
     実行

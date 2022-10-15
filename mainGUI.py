@@ -609,7 +609,10 @@ def Win_Result():
     alist = []
     for i in data:
         alist.append(data[i][3])
-    first = alist.index(max(alist))
+    try:
+        first = alist.index(max(alist))
+    except:
+        print("回答が送信されませんでした")
     
     flm_Result = tk.Frame(root)
     flm_Result.pack(expand=1, fill=tk.BOTH)
@@ -709,6 +712,8 @@ def Win_Step():
     lbl_Step02.place(x=480, y=216, anchor=tk.CENTER)
     lbl_Step03 = tk.Label(flm_Step, text="チーム番号は"+str(team_num)+"番です", font=("Arial", 30))
     lbl_Step03.place(x=480, y=324, anchor=tk.CENTER)
+    btn_next = tk.Button(flm_Step, text="次へ", font=("Arial", 30))
+    btn_next.place(x=720, y=432, anchor=tk.CENTER)
     get_cl()
 
 def Ans_Send():

@@ -84,6 +84,7 @@ def client():
         Win_Error2()
     else:
         flm_Load.destroy()
+        cam_pro = sp.Popen(["python", "camera_main.py"], shell=True)
         Win_Camera()
         mode = 1
 
@@ -674,8 +675,9 @@ def Win_Camera():
     lbl_Step01.place(x=480, y=108, anchor=tk.CENTER)
     btn_next = tk.Button(flm_Camera, text="次へ", font=("Arial", 30), command=camera_next)
     btn_next.place(x=720, y=450, anchor=tk.CENTER)
-    cam_pro = sp.Popen(["python", "camera_main.py"], shell=True)
     """
+    
+    
     #cam_err()
     camera_next()
 

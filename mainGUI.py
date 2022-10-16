@@ -612,6 +612,7 @@ def Win_Result():
     try:
         first = alist.index(max(alist))
     except:
+
         print("回答が送信されませんでした")
     
     flm_Result = tk.Frame(root)
@@ -750,8 +751,11 @@ def Ans_Send():
                 time.sleep(10)
 
         time.sleep(20 - deltatime)
-        with open("userInfo.json", "r", encoding="utf-8") as f:
-            ansdata = json.load(f)
+        try:
+            with open("userInfo.json", "r", encoding="utf-8") as f:
+                ansdata = json.load(f)
+        except:
+            ansdata = {}
         CLIENT.write_score(ansdata, Quiz_List[i]["answer"])
         with open("camera_cmd.txt", "w", encoding="utf-8") as f:
             if Quiz_List[i]["answer"] == 1:
